@@ -2,8 +2,8 @@ import { useEffect, useState } from 'react';
 import type { FormEvent } from 'react';
 import { createEquipment, listCategories, listLocations, updateEquipment } from '../../services/equipmentApi';
 import { validateEquipment } from '../../utils/equipmentValidation';
-import { EquipmentError, PROVIDER_SETTABLE_STATUSES, STATUS_LABELS } from '../../types/equipment';
-import type { Category, Equipment, EquipmentFormErrors, EquipmentRequest, Location, ProviderSettableStatus } from '../../types/equipment';
+import { EquipmentError, PROVIDER_EDITABLE_STATUSES , PROVIDER_SETTABLE_STATUSES, STATUS_LABELS } from '../../types/equipment';
+import type { Category, Equipment, EquipmentFormErrors, EquipmentRequest, Location, ProviderEditableStatus } from '../../types/equipment';
 
 /** US2-1 (create) and US2-3 (edit) share one form; `equipment` decides the mode. */
 export default function EquipmentForm({ equipment, onSaved, onCancel }: {
@@ -19,7 +19,7 @@ export default function EquipmentForm({ equipment, onSaved, onCancel }: {
     description: equipment?.description ?? '',
     category_id: equipment?.category.id ?? '',
     location_id: equipment?.location.id ?? '',
-    status: (equipment?.status as ProviderSettableStatus) ?? 'AVAILABLE',
+    status: (equipment?.status as ProviderEditableStatus) ?? 'AVAILABLE',
   });
   const [categories, setCategories] = useState<Category[]>([]);
   const [locations, setLocations] = useState<Location[]>([]);
@@ -145,12 +145,21 @@ export default function EquipmentForm({ equipment, onSaved, onCancel }: {
 
       <div className="form-field">
         <label htmlFor="equipment-status">Status</label>
-        <select id="equipment-status" name="status" value={form.status}
-          onChange={event => update('status', event.target.value as ProviderSettableStatus)} disabled={disabled}
+        <select
+          id="equipment-status"
+          name="status"
+          value={form.status}
+          onChange={event =>
+            update('status', event.target.value as ProviderEditableStatus)
+          }
+          disabled={disabled}
           aria-invalid={Boolean(errors.status)}
-          aria-describedby={errors.status ? 'equipment-status-error' : undefined}>
-          {PROVIDER_SETTABLE_STATUSES.map(status => (
-            <option key={status} value={status}>{STATUS_LABELS[status]}</option>
+          aria-describedby={errors.status ? 'equipment-status-error' : undefined}
+        >
+          {(editing ? PROVIDER_EDITABLE_STATUSES : PROVIDER_SETTABLE_STATUSES).map(status => (
+            <option key={status} value={status}>
+              {STATUS_LABELS[status]}
+            </option>
           ))}
         </select>
         {errors.status && <p className="form-error" id="equipment-status-error">{errors.status}</p>}

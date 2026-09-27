@@ -6,6 +6,13 @@ export type EquipmentStatus = (typeof EQUIPMENT_STATUSES)[number];
 export const PROVIDER_SETTABLE_STATUSES = ['AVAILABLE', 'MAINTENANCE'] as const;
 export type ProviderSettableStatus = (typeof PROVIDER_SETTABLE_STATUSES)[number];
 
+export const PROVIDER_EDITABLE_STATUSES = [
+  'AVAILABLE',
+  'MAINTENANCE',
+  'ARCHIVED',
+] as const;
+export type ProviderEditableStatus = (typeof PROVIDER_EDITABLE_STATUSES)[number];
+
 export const STATUS_LABELS: Record<EquipmentStatus, string> = {
   AVAILABLE: 'Available',
   RESERVED: 'Reserved',
@@ -42,7 +49,7 @@ export interface EquipmentRequest {
   description?: string;
   category_id: string;
   location_id: string;
-  status?: ProviderSettableStatus;
+  status?: ProviderSettableStatus | ProviderEditableStatus;
 }
 
 export type EquipmentFormErrors = Partial<Record<keyof EquipmentRequest, string>>;
